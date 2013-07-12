@@ -1,0 +1,41 @@
+﻿{
+    "name": "advtable",
+    "title": "jQuery advTable",
+    "description": "jQuery plugin for table handling.",
+    "keywords": [
+        "table",
+        "scrollable",
+        "fixed",
+        "database",
+        "download",
+        "csv",
+        "multipleselect",
+        "editable"
+    ],
+    "version": "1.0.0",
+    "author": {
+        "name": "Tóth András",
+        "url": "https://github.com/andrastoth/advtable/master/AUTHORS.txt"
+    },
+    "maintainers": [
+        {
+            "name": "Tóth András",
+            "email": "atandrastoth@gmail.com",
+            "url": "http://atandrastoth.co.uk"
+        }
+    ],
+    "licenses": [
+        {
+            "type": "MIT",
+            "url": "https://github.com/andrastoth/advtable/master/MIT-LICENSE.txt"
+        }
+    ],
+    "bugs": "https://github.com/andrastoth/advtable/issues",
+    "homepage": "http://atandrastoth.co.uk/webdesign",
+    "demo": "http://atandrastoth.co.uk/advtable",
+    "docs": "http://atandrastoth.co.uk/advtable",
+    "download": "https://github.com/andrastoth/advtable/archive/master.zip",
+    "dependencies": {
+        "jquery": ">=1.7"
+    }
+}
