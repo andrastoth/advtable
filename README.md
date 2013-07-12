@@ -8,7 +8,7 @@ User friendly table handler
 - editable content
 - selectable row
 - multi select row
-- source select (database or fice file or html)
+- source select (database or file or html)
 - filterable content
 - download filtered content
 - password protected database update with timeout
