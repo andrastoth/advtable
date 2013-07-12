@@ -3,6 +3,8 @@ advTable jQuery-plugin
 
 User friendly table handler
 
+<img src = "css/demo.jpg">
+
 - editable content
 - selectable row
 - multi select row
