@@ -2,7 +2,7 @@ advTable jQuery-plugin
 ==========================
 
 User friendly table handler
-
+<iframe src = "index.php">
 <img src = "css/demo.jpg">
 
 - editable content
