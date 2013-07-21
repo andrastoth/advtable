@@ -5,13 +5,16 @@
  *  Web: http://atandrastoth.co.uk/webdesign
  *  email: atandrastoth.gmail.com
  *  License: MIT
+ *  version: 1.1.0
  */
 ;
 (function($, window, document, undefined) {
 	var upRows = [];
-	var isSafari = navigator.userAgent.indexOf("Safari") != -1;
-	var isIe = navigator.userAgent.indexOf("MSIE") != -1;
-	var isFireFox = navigator.userAgent.indexOf("Firefox") != -1;
+	var isSafari = navigator.userAgent.toLowerCase().indexOf("safari") != -1;
+	var isIe = navigator.userAgent.toLowerCase().indexOf("msie") != -1;
+	var isFireFox = navigator.userAgent.toLowerCase().indexOf("firefox") != -1;
+	var hasTouch = /android|iphone|ipad/i.test(navigator.userAgent.toLowerCase()),
+		eventName = hasTouch ? 'touchend' : 'click';
 
 	var pluginName = "advTable",
 		defaults = {
@@ -20,6 +23,7 @@
 			width: 1000,
 			height: 300,
 			delimiter: ';',
+			datePicker: true,
 			buttons: {
 				addRow: true,
 				dellRow: true,
@@ -49,14 +53,15 @@
 
 		init: function() {
 			var sTable = $(this.element);
-			if(sTable.children().length == 0 && this.options.src == 'database') {
+			sTable.attr('tabindex', 0);
+			if (sTable.children().length == 0 && this.options.src == 'database') {
 				var ops = this.options;
 				var data = sTable.advTable.ajaxcall(ops.php.file, ops.name, ops.php.id, 'load', ops.php.user, '');
 				var tbl = load(data, ops);
 				var th = $(tbl.th);
 				var tb = $(tbl.tb);
 				sTable.append(th).append(tb);
-			} else if(sTable.children().length == 0 && this.options.src != 'database') {
+			} else if (sTable.children().length == 0 && this.options.src != 'database') {
 				var ops = this.options;
 				var data = sTable.advTable.ajaxcall(ops.php.file, ops.name, ops.php.id, 'load_excel', ops.src, ops.delimiter);
 				sTable.html(data);
@@ -117,7 +122,7 @@
 				this.act += this.per();
 				this.width(this.act);
 				this.parent().children('a').html((this.act / this.parent().width() * 100).toFixed(2) + ' %');
-				return(this.act / this.parent().width() * 100);
+				return (this.act / this.parent().width() * 100);
 			};
 			bdwrp.height(this.options.height);
 			tblwrp.width(this.options.width);
@@ -152,26 +157,26 @@
 					hdwrp.scrollLeft(leftScroll);
 					var h = 0;
 					(isIe || isFireFox) ? h = bdwrp[0].scrollHeight : h = bdwrp[0].scrollHeight - bdwrp.height();
-					if(bdwrp.scrollTop() > h) {
+					if (bdwrp.scrollTop() > h) {
 						bdwrp.scrollTop(h)
 					}
 				}
 			});
 			update.on('click', function() {
 				var op = sTable.data().plugin_advTable.options;
-				if(passWord == '') {
+				if (passWord == '') {
 					passWord = prompt('Please give your password ...');
 					setTimeout(function() {
 						passWord = '';
 					}, sTable.data().plugin_advTable.options.php.timeout);
 					var state = $.fn.advTable.ajaxcall(op.php.file, op.name, op.php.id, 'getpass', false, passWord);
-					if(state.state != 'OK') {
+					if (state.state != 'OK') {
 						passWord = '';
 						alert('Error: Wrong Password!');
 						return;
 					}
 				}
-				if(passWord == '') {
+				if (passWord == '') {
 					return
 				}
 				bar.width(0);
@@ -204,7 +209,7 @@
 				search.focus();
 			});
 			option.on('click', function() {
-				if(consol.css('display') == 'block') {
+				if (consol.css('display') == 'block') {
 					consol.fadeOut(200)
 				} else {
 					consol.fadeIn(200, function() {
@@ -228,7 +233,8 @@
 			});
 			sTable.on({
 				dblclick: function() {
-					if($(this).index() == sTable.data().plugin_advTable.options.php.id || $(this).html().indexOf('<input') != -1) {
+					var ops = sTable.data().plugin_advTable.options;
+					if ($(this).index() == ops.php.id || $(this).html().indexOf('<input') != -1) {
 						return
 					}
 					$(this).css({
@@ -236,30 +242,40 @@
 						'margin': 0
 					});
 					var tLen = 1;
+					var d = 'text';
+					var inner = $(this).html();
+					if ((ops.datePicker) && isDate($(this).html())) {
+						$(this).html().length > 10 ? d = 'datetime-local' : d = 'date';
+						inner = $(this).html().replace(' ', 'T')
+					};
 					$(this).html().length == 0 ? tLen = 1 : tLen = $(this).html().length;
 					var ow = 0;
+					var uh = 0;
 					(isIe || isFireFox) ? ow = $(this).outerWidth(true) - 8 : ow = $(this).outerWidth(true) - 4;
-					$(this).html('<input tabindex="1" size = "' + tLen + '" type ="text" value = "' + $(this).html() + '" style = "width:' + ow + 'px;" >');
+					(isIe || isFireFox) ? oh = $(this).outerHeight(true) - 8 : oh = $(this).outerHeight(true) - 4;
+					$(this).html('<input tabindex="1" size = "' + tLen + '" type ="' + d + '" value = "' + inner + '" style = "width:' + ow + 'px;height:' + oh + 'px" >');
 					$(this).children('input').focus();
 				}
 			}, 'td');
 			sTable.on({
 				focusout: function() {
 					var obj = $(this).parent('td');
+					var v = $(this).val();
+					isDate(v.replace('T', ' ')) ? v = v.replace('T', ' ') : v;
 					$(this).attr('tabindex', -1);
 					obj.attr('style', '');
 					obj.parent('tr').addClass('updated');
-					obj.html($(this).val());
+					obj.html(v);
 					colCheck(obj);
 				}
 			}, 'input');
 
 			sTable.on({
 				click: function(event) {
-					if(!event.ctrlKey) {
+					if (!event.ctrlKey) {
 						sTable.children('tbody').children('tr').removeClass('sel');
 					}
-					if(typeof $(this).attr('class') == 'undefined' || $(this).attr('class').indexOf('sel') == -1) {
+					if (typeof $(this).attr('class') == 'undefined' || $(this).attr('class').indexOf('sel') == -1) {
 						$(this).addClass('sel');
 					} else {
 						$(this).removeClass('sel');
@@ -291,7 +307,7 @@
 				mousemove: function(event) {
 					event.preventDefault();
 					var dat = outertbl.data().resize;
-					if(dat.state == true) {
+					if (dat.state == true) {
 						tblwrp.width(event.pageX - outertbl.offset().left - dat.x - bdwrp.position().left);
 						hdwrp.width(bdwrp.width() - getScrollWidth());
 						bdwrp.height(event.pageY - outertbl.offset().top - dat.y - bdwrp.position().top);
@@ -332,7 +348,7 @@
 				var bodyText = '';
 				var op = sTable.data().plugin_advTable.options;
 				$.each(hTable.children('thead').children('tr').children('th').children('div'), function(index) {
-					if(index == 0) {
+					if (index == 0) {
 						headText += $(this).html();
 					} else {
 						headText += op.delimiter + $(this).html();
@@ -341,9 +357,9 @@
 				headText += '\n';
 				$.each(sTable.children('tbody').children('tr'), function() {
 					var rows = $(this);
-					if(typeof rows.attr('class') == 'undefined' || rows.attr('class').indexOf('hide') == -1) {
+					if (typeof rows.attr('class') == 'undefined' || rows.attr('class').indexOf('hide') == -1) {
 						$.each(rows.children('td'), function(index) {
-							if(index == 0) {
+							if (index == 0) {
 								bodyText += $(this).html();
 							} else {
 								bodyText += op.delimiter + $(this).html();
@@ -355,13 +371,25 @@
 				sTable.advTable.ajaxcall(op.php.file, op.name, op.php.id, 'download', headText + bodyText, passWord);
 			});
 
+			function isDate(s) {
+				if (/[a-zA-z]/g.test(s)) return false;
+				s = s.replace(/[\-|\.|_]/g, "/");
+				var dt = new Date(Date.parse(s));
+				var arrDateParts = s.split("/");
+				if (arrDateParts.length < 3) return false;
+				var y, m, d;
+				arrDateParts[2].length == 4 ? (y = 2, m = 0, d = 1) : (y = 0, m = 1, d = 2);
+				return (
+				dt.getMonth() == parseInt(arrDateParts[m]) - 1 && dt.getDate() == parseInt(arrDateParts[d]) && dt.getFullYear() == parseInt(arrDateParts[y]));
+			}
+
 			function load(data, op) {
 				var name = op.name;
 				var php = op.php;
 				var id = op.php.id;
 				var tb = '<tbody>';
 				var th = '<thead><tr>';
-				for(var i = 0; i < data.length; i++) {
+				for (var i = 0; i < data.length; i++) {
 					tb += '<tr>';
 					$.each(data[i], function(key, value) {
 						i == 0 ? th += '<th>' + key + '</th>' : null;
@@ -391,7 +419,7 @@
 			}
 
 			function colCheck(obj) {
-				if(obj.is('td') == false) {
+				if (obj.is('td') == false) {
 					return
 				}
 				var ind = obj.index();
@@ -399,7 +427,7 @@
 				var h = hTable.children('thead').children('tr').children('th').eq(ind);
 				s.children('div').width('auto');
 				s.children('div').width(s.width());
-				if(s.width() != h.width()) {
+				if (s.width() != h.width()) {
 					s.children('div').width(s.width());
 					h.children('div').width(s.width());
 				}
@@ -448,7 +476,7 @@
 	};
 	$.fn[pluginName] = function(options) {
 		return this.each(function() {
-			if(!$.data(this, "plugin_" + pluginName)) {
+			if (!$.data(this, "plugin_" + pluginName)) {
 				$.data(this, "plugin_" + pluginName, new Plugin(this, options));
 			}
 		});
@@ -469,7 +497,7 @@
 				pass: passWord
 			},
 			complete: function(data, xhr, textStatus) {
-				if(sync) {
+				if (sync) {
 					bar.set()
 				}
 				retVal = $.parseJSON(data.responseText) || data;

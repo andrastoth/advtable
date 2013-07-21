@@ -1,4 +1,5 @@
 .tbldef {
+    outline: 0;
     border-collapse: separate;
     border-spacing: 1px;
     font-family: sans-serif, arial;

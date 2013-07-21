@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="css/style.css"/>
     <link rel="stylesheet" href="css/advtable-1.0.0.min.css"/>
     <script type="text/javascript"  src="js/jquery-1.9.0.1.min.js"></script>
-    <script type="text/javascript"  src="js/advtable-1.0.0.min.js"></script>
+    <script type="text/javascript"  src="js/advtable-1.1.0.min.js"></script>
     <link type ="text/css" rel="stylesheet" href="css/codemirror.css" charset="utf-8" media="all">  
     <link type ="text/css" rel="stylesheet" href="css/monokai.css" charset="utf-8" media="all">   
     <script src="js/codemirror.js" type="text/javascript" charset="utf-8" ></script>
@@ -109,6 +109,7 @@ Menu bar (bottom left):
                 width: 1000,        // table inner width numeric
                 height: 300,        // table inner height numeric
                 delimiter: ';',     // delimiter for csv file (download)
+                datePicker: true,   // enable HTML5 date picker. Check field data. If this date or datetime then enable browser HTML5 datepicker.
                 buttons: {          // handlers true:display, false:hide
                     addRow: true,   
                     dellRow: true,
