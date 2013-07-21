@@ -12,7 +12,7 @@
         "multipleselect",
         "editable"
     ],
-    "version": "1.1.0",
+    "version": "1.2.1",
     "author": {
         "name": "Tóth András",
         "url": "https://github.com/andrastoth/advtable/master/AUTHORS.txt"
